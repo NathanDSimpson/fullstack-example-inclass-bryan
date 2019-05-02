@@ -31,7 +31,7 @@ module.exports = {
             username,
             hash
         })
-        session.user = {
+        session.user = { // this adds the user to the session so they dont have to log in after registering
             username,
             hash,
             login_id: user_id[0].balance_id 
@@ -56,5 +56,22 @@ module.exports = {
         } catch(err){
             res.sendStatus(401)
         }
+    },
+
+    getDetails: async (req, res) => {
+    const db = req.app.get('db')
+    const { session } = req
+    try {
+        const { login_id : id } = session.user
+        const data = await db.getUserDetails({id})
+        res.status(200).send(data[0])
+    } catch(err){
+        res.sendStatus(500)
+    }
+    },
+
+    logout: (req, res) => {
+    req.session.destroy()
+    res.sendStatus(200)
     }
 }
